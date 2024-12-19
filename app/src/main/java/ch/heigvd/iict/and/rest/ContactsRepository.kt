@@ -25,7 +25,7 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         uuid.postValue(url.readText())
     }
 
-    fun setUuid(url: URL) : HttpURLConnection{
+    private fun setUuid(url: URL) : HttpURLConnection{
         val connection = url.openConnection() as HttpURLConnection
         connection.setRequestProperty("X-UUID", uuid.value)
         return connection
