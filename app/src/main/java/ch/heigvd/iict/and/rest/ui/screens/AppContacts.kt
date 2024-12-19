@@ -59,6 +59,10 @@ fun AppContact(application: ContactsApplication, contactsViewModel : ContactsVie
         Column(modifier = Modifier.padding(top = padding.calculateTopPadding())) {
             ScreenContactList(contacts) { selectedContact ->
                 Toast.makeText(context, "TODO - Edition de ${selectedContact.firstname} ${selectedContact.name}", Toast.LENGTH_SHORT).show()
+                //Switch to AppContactsEdit
+                //Indiquer au view model qu'on est en mode édition
+
+
             }
         }
     }

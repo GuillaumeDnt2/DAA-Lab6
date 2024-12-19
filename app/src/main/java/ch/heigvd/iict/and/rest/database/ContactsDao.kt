@@ -32,4 +32,7 @@ interface ContactsDao {
     @Query("DELETE FROM Contact")
     fun clearAllContacts()
 
+    @Query("SELECT * FROM Contact WHERE id = :id")
+    fun getContactByIdLiveData(id : Long) : LiveData<Contact?>
+
 }

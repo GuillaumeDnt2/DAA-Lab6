@@ -30,6 +30,8 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
         }
     }
 
+    fun getContactById(id: Long) = repository.getContactById(id)
+
 }
 
 class ContactsViewModelFactory(private val application: ContactsApplication) : ViewModelProvider.Factory {
