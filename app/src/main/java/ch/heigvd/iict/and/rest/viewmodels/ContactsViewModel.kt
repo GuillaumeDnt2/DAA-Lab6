@@ -1,6 +1,8 @@
 package ch.heigvd.iict.and.rest.viewmodels
 
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,6 +10,12 @@ import ch.heigvd.iict.and.rest.ContactsApplication
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(application) {
+
+    enum class ApplicationStatus {
+        EDIT,
+        ADD,
+        INITIAL
+    }
 
     //TODO: Il faut également un UUID ici qui sera soit donné par l'Activité depuis les préférences
     // soit donné par l'inscription depuis le repository.
@@ -19,6 +27,20 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
     val allContacts = repository.allContacts
 
     var uuid = repository.uuid
+
+    private val _idToEdit = MutableLiveData<Long?>(null)
+    val idToEdit: LiveData<Long?> = _idToEdit
+
+    private val _applicationStatus = MutableLiveData<ApplicationStatus>(ApplicationStatus.INITIAL)
+    val applicationStatus: LiveData<ApplicationStatus> = _applicationStatus
+
+    fun setIdToEdit(id: Long?) {
+        _idToEdit.value = id
+    }
+
+    fun setApplicationStatus(status: ApplicationStatus) {
+        _applicationStatus.value = status
+    }
 
     fun enroll() {
         viewModelScope.launch {

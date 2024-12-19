@@ -50,6 +50,7 @@ fun AppContact(application: ContactsApplication, contactsViewModel : ContactsVie
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 Toast.makeText(context, "TODO - Création d'un nouveau contact", Toast.LENGTH_SHORT).show()
+                contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.ADD)
             }){
                 Icon(Icons.Default.Add, contentDescription = null)
             }
@@ -61,7 +62,8 @@ fun AppContact(application: ContactsApplication, contactsViewModel : ContactsVie
                 Toast.makeText(context, "TODO - Edition de ${selectedContact.firstname} ${selectedContact.name}", Toast.LENGTH_SHORT).show()
                 //Switch to AppContactsEdit
                 //Indiquer au view model qu'on est en mode édition
-
+                contactsViewModel.setIdToEdit(selectedContact.id)
+                contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.EDIT)
 
             }
         }
