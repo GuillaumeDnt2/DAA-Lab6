@@ -17,7 +17,14 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
 
     val allContacts = contactsDao.getAllContactsLiveData()
 
+    fun getContactById(id: Long) = contactsDao.getContactByIdLiveData(id)
+
     val uuid = MutableLiveData<String>()
+
+    fun deleteLocal() {
+        contactsDao.clearAllContacts()
+    }
+
 
 
     suspend fun enroll() = withContext(Dispatchers.IO){
