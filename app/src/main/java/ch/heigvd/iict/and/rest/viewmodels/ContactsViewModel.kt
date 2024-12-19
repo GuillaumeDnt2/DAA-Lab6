@@ -18,6 +18,8 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
 
     val allContacts = repository.allContacts
 
+    var uuid = repository.uuid
+
     fun enroll() {
         viewModelScope.launch {
             //TODO
