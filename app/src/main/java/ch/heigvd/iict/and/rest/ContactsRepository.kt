@@ -16,14 +16,15 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
     val uuid = MutableLiveData<String>()
 
 
-    suspend fun enroll() : String = withContext(Dispatchers.IO){
+    suspend fun enroll() = withContext(Dispatchers.IO){
         val url = URL("https://daa.iict.ch/enroll")
-        url.readText()
+        uuid.postValue(url.readText())
     }
 
+    /*
     suspend fun fetchAll(uuid: String) : List<> = withContext(Dispatchers.IO){
         val url = URL("https://daa.iict.ch/refresh")
         url.readText()
-    }
+    }*/
 
 }
