@@ -3,7 +3,9 @@ package ch.heigvd.iict.and.rest.viewmodels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import ch.heigvd.iict.and.rest.ContactsApplication
+import kotlinx.coroutines.launch
 
 class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(application) {
 
@@ -16,8 +18,18 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
 
     val allContacts = repository.allContacts
 
-    fun refresh() {
+    var uuid = repository.uuid
 
+    fun enroll() {
+        viewModelScope.launch {
+            //TODO
+        }
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            //TODO
+        }
     }
 
 }

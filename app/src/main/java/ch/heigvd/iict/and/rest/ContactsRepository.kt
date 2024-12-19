@@ -13,7 +13,7 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
 
     val allContacts = contactsDao.getAllContactsLiveData()
 
-    val uuid = MutableLiveData<String>();
+    val uuid = MutableLiveData<String>()
 
 
     suspend fun enroll() : String = withContext(Dispatchers.IO){
