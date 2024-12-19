@@ -17,6 +17,11 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
 
     val uuid = MutableLiveData<String>()
 
+    fun deleteLocal() {
+        contactsDao.clearAllContacts()
+    }
+
+
 
     suspend fun enroll() = withContext(Dispatchers.IO){
         val url = URL("https://daa.iict.ch/enroll")
