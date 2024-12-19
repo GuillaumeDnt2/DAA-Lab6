@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
     // qui le donnera au repository, observer la valeur de l'UUID dans le ViewModel pour savoir
     // s'il change à cause de enroll et finalement le sauvegarder dans les préférences à la fin.
 
-    private val prefs: SharedPreferences = getPreferences(Context.MODE_PRIVATE)
+    private lateinit var prefs: SharedPreferences
 
     private val contactVM : ContactsViewModel by viewModels {
         ContactsViewModelFactory(application as ContactsApplication)
@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        prefs = getPreferences(Context.MODE_PRIVATE)
         val uuid = prefs.getString("uuid", null)
         if (uuid != null) {
             contactVM.uuid.postValue(uuid)
