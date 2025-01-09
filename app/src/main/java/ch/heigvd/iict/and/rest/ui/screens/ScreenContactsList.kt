@@ -23,9 +23,12 @@ import ch.heigvd.iict.and.rest.ui.theme.MyComposeApplicationTheme
 
 @Composable
 fun ScreenContactList(contacts : List<Contact>, onContactSelected : (Contact) -> Unit ) {
+
+    val activeContacts = contacts.filter { it.status != Status.DEL } //Remove deleted contacts from being shown
+
     Column {
         Text(text = stringResource(R.string.screen_list_title), fontSize = 24.sp)
-        if (contacts.isEmpty()) {
+        if (activeContacts.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -37,7 +40,7 @@ fun ScreenContactList(contacts : List<Contact>, onContactSelected : (Contact) ->
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
-                items(contacts) { item ->
+                items(activeContacts) { item ->
                     ContactItemView(item) { clickedContact ->
                         onContactSelected(clickedContact)
                     }

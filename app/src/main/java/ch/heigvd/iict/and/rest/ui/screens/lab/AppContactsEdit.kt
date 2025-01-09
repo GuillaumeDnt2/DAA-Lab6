@@ -32,7 +32,6 @@ import ch.heigvd.iict.and.rest.R
 import java.util.Locale
 import java.text.SimpleDateFormat
 
-// Add this new component for the edit/delete/cancel buttons
 @Composable
 fun EditActionButtons(
     onCancelClick: () -> Unit,
@@ -75,11 +74,13 @@ fun AppContactEdit(
     contactsViewModel: ContactsViewModel = viewModel(factory = ContactsViewModelFactory(application)),
     contactId: Long
 ) {
-    val context = LocalContext.current
     val contact by contactsViewModel.getContactById(contactId).observeAsState()
 
     if (contact == null) {
-        Toast.makeText(context, "Contact not found", Toast.LENGTH_SHORT).show()
+        // While the contact is loading, display a loading indicator
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
         return
     }
 
@@ -89,8 +90,8 @@ fun AppContactEdit(
     var email by remember { mutableStateOf(contact?.email ?: "") }
     var birthday by remember {
         mutableStateOf(
-            contact?.birthday?.let { date ->
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)
+            contact?.birthday?.time?.let { date ->
+                SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date)
             } ?: ""
         )
     }
@@ -98,14 +99,14 @@ fun AppContactEdit(
     var zip by remember { mutableStateOf(contact?.zip ?: "") }
     var city by remember { mutableStateOf(contact?.city ?: "") }
     var phoneNumber by remember { mutableStateOf(contact?.phoneNumber ?: "") }
-    var selectedPhoneType by remember { mutableStateOf(contact?.type?.name ?: "Fax") }
+    var selectedPhoneType by remember { mutableStateOf(contact?.type?.name ?: "FAX") }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.app_name)) },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle navigation */ }) {
+                    IconButton(onClick = { contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.INITIAL) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -144,9 +145,13 @@ fun AppContactEdit(
             )
 
             EditActionButtons(
-                onCancelClick = { /* Handle cancel */ },
-                onDeleteClick = { /* Handle delete */ },
-                onSaveClick = { /* Handle save */ }
+                onCancelClick = { contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.INITIAL) },
+                onDeleteClick = {
+                        //TODO : Tell backend that the user has been deleted
+                    },
+                onSaveClick = {
+                        //TODO : Tell backend that the user has been updated
+                }
             )
         }
     }

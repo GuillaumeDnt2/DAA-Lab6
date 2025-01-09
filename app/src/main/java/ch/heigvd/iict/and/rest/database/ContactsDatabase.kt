@@ -12,6 +12,7 @@ import ch.heigvd.iict.and.rest.models.PhoneType
 import ch.heigvd.iict.and.rest.models.Status
 import java.util.Calendar
 import java.util.GregorianCalendar
+import java.util.TimeZone
 import kotlin.concurrent.thread
 
 @Database(entities = [Contact::class], version = 1, exportSchema = true)
@@ -44,6 +45,7 @@ abstract class ContactsDatabase : RoomDatabase() {
     private class MyDatabaseCallback : Callback() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
+
             INSTANCE?.let{ database ->
                 thread {
                     if(database.contactsDao().getCount() == 0) {
