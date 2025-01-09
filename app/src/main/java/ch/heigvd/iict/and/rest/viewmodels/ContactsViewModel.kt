@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.heigvd.iict.and.rest.ContactsApplication
+import ch.heigvd.iict.and.rest.models.Contact
 import kotlinx.coroutines.launch
 
 class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(application) {
@@ -42,15 +44,33 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
         _applicationStatus.value = status
     }
 
+    fun new(contact : Contact){
+        viewModelScope.launch{
+            repository.new(contact)
+        }
+    }
+
+    fun delete(contact : Contact){
+        viewModelScope.launch{
+            repository.delete(contact)
+        }
+    }
+
+    fun update(contact : Contact){
+        viewModelScope.launch{
+            repository.update(contact)
+        }
+    }
+
     fun enroll() {
-        viewModelScope.launch {
-            //TODO
+        viewModelScope.launch{
+            repository.enroll()
         }
     }
 
     fun refresh() {
         viewModelScope.launch {
-            //TODO
+            repository.
         }
     }
 

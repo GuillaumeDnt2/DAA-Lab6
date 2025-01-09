@@ -2,7 +2,9 @@ package ch.heigvd.iict.and.rest
 
 import androidx.lifecycle.MutableLiveData
 import ch.heigvd.iict.and.rest.database.ContactsDao
+import ch.heigvd.iict.and.rest.models.Contact
 import ch.heigvd.iict.and.rest.models.ContactDTO
+import ch.heigvd.iict.and.rest.models.Status
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -21,11 +23,32 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
 
     val uuid = MutableLiveData<String>()
 
-    fun deleteLocal() {
+    suspend fun deleteLocal() {
         contactsDao.clearAllContacts()
     }
 
+    suspend fun new(contact: Contact) = withContext(Dispatchers.IO){
+        contactsDao.insert(contact)
+    }
 
+    suspend fun update(contact: Contact) = withContext(Dispatchers.IO){
+
+        contact.status = Status.MOD
+        contactsDao.update(contact)
+    }
+
+    suspend fun delete(contact: Contact) = withContext(Dispatchers.IO){
+        contact.status = Status.DEL
+        contactsDao.update(contact)
+    }
+
+    suspend fun deleteConfirmed(contact : Contact) = withContext(Dispatchers.IO){
+        contactsDao.delete(contact)
+    }
+
+    suspend fun refresh() = withContext(Dispatchers.IO){
+
+    }
 
     suspend fun enroll() = withContext(Dispatchers.IO){
         val url = URL("https://daa.iict.ch/enroll")
@@ -44,7 +67,7 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         val connection = setUuid(url)
         val json = connection.url.readText(Charsets.UTF_8)
         val type = object : TypeToken<List<ContactDTO>>() {}.type
-        Gson().fromJson<List<ContactDTO>>(json, type)
+        Gson().fromJson(json, type)
     }
 
     suspend fun fetchContact(id: String) : ContactDTO = withContext(Dispatchers.IO){
@@ -52,7 +75,7 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         val connection = setUuid(url)
         val json = connection.url.readText(Charsets.UTF_8)
         val type = object : TypeToken<ContactDTO>() {}.type
-        Gson().fromJson<ContactDTO>(json, type)
+        Gson().fromJson(json, type)
     }
 
 }
