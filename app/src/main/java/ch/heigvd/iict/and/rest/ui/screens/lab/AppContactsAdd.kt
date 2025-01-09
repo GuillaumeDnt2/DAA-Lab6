@@ -28,7 +28,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ch.heigvd.iict.and.rest.R
+import ch.heigvd.iict.and.rest.models.PhoneType
+import ch.heigvd.iict.and.rest.models.Status
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Locale
 
 
@@ -119,7 +122,7 @@ fun AppContactAdd(
             TopAppBar(
                 title = { Text(text = stringResource(R.string.app_name)) },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle navigation */ }) {
+                    IconButton(onClick = { contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.INITIAL) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -158,8 +161,37 @@ fun AppContactAdd(
             )
 
             ActionButtons(
-                onCancelClick = { /* Handle cancel */ },
-                onSaveClick = { /* Handle save */ }
+                onCancelClick = { contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.INITIAL) },
+                onSaveClick = {try {
+                    // Parse the birthday string into a Date
+                    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    val date = sdf.parse(birthday)
+
+                    // If parsing is successful, create a Calendar object
+                    val calendar = Calendar.getInstance()
+                    calendar.time = date
+
+                    val contact = Contact(
+                        name = name,
+                        firstname = firstname,
+                        email = email,
+                        birthday = calendar,  // Set the parsed calendar value
+                        address = address,
+                        zip = zip,
+                        city = city,
+                        type = PhoneType.fromString(selectedPhoneType),
+                        phoneNumber = phoneNumber,
+                        remoteId = null,
+                        status = Status.NEW
+                    )
+
+                    // TODO: Send the contact to the backend team
+                } catch (e: Exception) {
+                    // Handle invalid date format (show a user-friendly message or log the error)
+                    println("Invalid date format: $birthday")
+                }
+                }
+
             )
         }
     }

@@ -49,7 +49,7 @@ fun AppContact(application: ContactsApplication, contactsViewModel : ContactsVie
         floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                Toast.makeText(context, "TODO - Création d'un nouveau contact", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "TODO - Création d'un nouveau contact", Toast.LENGTH_SHORT).show()
                 contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.ADD)
             }){
                 Icon(Icons.Default.Add, contentDescription = null)
