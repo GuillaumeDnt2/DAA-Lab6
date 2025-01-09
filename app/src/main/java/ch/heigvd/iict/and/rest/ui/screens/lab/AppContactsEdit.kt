@@ -79,6 +79,8 @@ fun AppContactEdit(
 ) {
     val contact by contactsViewModel.getContactById(contactId).observeAsState()
 
+    var context = LocalContext.current
+
     // State variables for form fields
     var name by remember { mutableStateOf("") }
     var firstname by remember { mutableStateOf("") }
@@ -163,10 +165,25 @@ fun AppContactEdit(
             EditActionButtons(
                 onCancelClick = { contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.INITIAL) },
                 onDeleteClick = {
-                        //TODO : Tell backend that the user has been deleted
+                        contactsViewModel.delete(contact!!)
+                        Toast.makeText(context, "Contact deleted successfully!", Toast.LENGTH_SHORT).show()
+                        contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.INITIAL)
                     },
                 onSaveClick = {
                         //TODO : Tell backend that the user has been updated
+                    AppContactsUtilities().handleSaveOrUpdateClick(
+                        context = context,
+                        name = name,
+                        firstname = firstname,
+                        email = email,
+                        birthday = birthday,
+                        address = address,
+                        zip = zip,
+                        city = city,
+                        phoneNumber = phoneNumber,
+                        selectedPhoneType = selectedPhoneType,
+                        contactsViewModel = contactsViewModel,
+                        update = true)
                 }
             )
         }

@@ -1,5 +1,6 @@
 package ch.heigvd.iict.and.rest.ui.screens.lab
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -30,7 +31,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ch.heigvd.iict.and.rest.R
+import ch.heigvd.iict.and.rest.models.PhoneType
+import ch.heigvd.iict.and.rest.models.Status
 import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 
@@ -76,7 +81,7 @@ fun PhoneTypeSelector(
 @Composable
 fun ActionButtons(
     onCancelClick: () -> Unit,
-    onSaveClick: () -> Unit
+    onSaveClick:  () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -106,6 +111,8 @@ fun AppContactAdd(
     application: ContactsApplication,
     contactsViewModel: ContactsViewModel = viewModel(factory = ContactsViewModelFactory(application))
 ) {
+    var context = LocalContext.current
+
     var name by remember { mutableStateOf("") }
     var firstname by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -121,7 +128,7 @@ fun AppContactAdd(
             TopAppBar(
                 title = { Text(text = stringResource(R.string.app_name)) },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle navigation */ }) {
+                    IconButton(onClick = { contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.INITIAL) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -162,9 +169,22 @@ fun AppContactAdd(
             )
 
             ActionButtons(
-                onCancelClick = { /* Handle cancel */ },
-                onSaveClick = { /* Handle save */ }
-            )
+                onCancelClick = { contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.INITIAL) },
+                onSaveClick = {
+                    AppContactsUtilities().handleSaveOrUpdateClick(
+                        context = context,
+                        name = name,
+                        firstname = firstname,
+                        email = email,
+                        birthday = birthday,
+                        address = address,
+                        zip = zip,
+                        city = city,
+                        phoneNumber = phoneNumber,
+                        selectedPhoneType = selectedPhoneType,
+                        contactsViewModel = contactsViewModel,
+                        update = false)
+                })
         }
     }
 }
