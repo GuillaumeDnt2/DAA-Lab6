@@ -70,7 +70,6 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
 
     fun refresh() {
         viewModelScope.launch {
-            repository.
         }
     }
 
