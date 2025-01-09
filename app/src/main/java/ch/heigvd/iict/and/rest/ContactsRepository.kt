@@ -118,9 +118,9 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
 
     }
 
-    suspend fun deleteContact(contact: ContactDTO) : Boolean = withContext(Dispatchers.IO) {
+    suspend fun deleteContact(id: String) : Boolean = withContext(Dispatchers.IO) {
         // Set l'en-tête
-        val url = URL("https://daa.iict.ch/contacts")
+        val url = URL("https://daa.iict.ch/contacts/$id")
         val connection = setUuid(url)
         connection.requestMethod = "DELETE"
 
