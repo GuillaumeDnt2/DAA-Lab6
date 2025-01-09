@@ -26,7 +26,6 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
     }
 
 
-
     suspend fun enroll() = withContext(Dispatchers.IO){
         val url = URL("https://daa.iict.ch/enroll")
         uuid.postValue(url.readText())
@@ -38,21 +37,94 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         return connection
     }
 
+    private fun checkStatus(connection: HttpURLConnection) : Boolean {
+        return connection.responseCode >= 200 || connection.responseCode < 300
+    }
 
-    suspend fun fetchAll() : List<ContactDTO> = withContext(Dispatchers.IO){
+
+    suspend fun fetchAll() : List<ContactDTO>? = withContext(Dispatchers.IO){
         val url = URL("https://daa.iict.ch/contacts")
         val connection = setUuid(url)
         val json = connection.url.readText(Charsets.UTF_8)
+
+        if(checkStatus(connection)) {
+            return@withContext null
+        }
+
         val type = object : TypeToken<List<ContactDTO>>() {}.type
         Gson().fromJson<List<ContactDTO>>(json, type)
     }
 
-    suspend fun fetchContact(id: String) : ContactDTO = withContext(Dispatchers.IO){
+    suspend fun fetchContact(id: String) : ContactDTO? = withContext(Dispatchers.IO){
         val url = URL("https://daa.iict.ch/contacts/$id")
         val connection = setUuid(url)
         val json = connection.url.readText(Charsets.UTF_8)
+
+        if(checkStatus(connection)) {
+            return@withContext null
+        }
+
         val type = object : TypeToken<ContactDTO>() {}.type
         Gson().fromJson<ContactDTO>(json, type)
+    }
+
+    suspend fun createContact(contact: ContactDTO) : ContactDTO? = withContext(Dispatchers.IO){
+        // Set l'en-tête
+        val url = URL("https://daa.iict.ch/contacts")
+        val connection = setUuid(url)
+        connection.setRequestProperty("Content-Type", "application/json")
+        connection.requestMethod = "POST"
+
+        // Ajoute le body
+        val os = connection.outputStream
+        os.write(Gson().toJson(contact).toByteArray())
+        os.close()
+
+        // Récupère la réponse
+        val json = connection.url.readText(Charsets.UTF_8)
+
+        // Vérifie que la réponse est OK
+        if(!checkStatus(connection)) {
+            return@withContext null
+        }
+
+        // Converti le JSON en objet et le retourne
+        val type = object : TypeToken<ContactDTO>() {}.type
+        Gson().fromJson<ContactDTO>(json, type)
+
+    }
+
+    suspend fun updateContact(contact: ContactDTO) : ContactDTO? = withContext(Dispatchers.IO){
+        // Set l'en-tête
+        val url = URL("https://daa.iict.ch/contacts/${contact.id}")
+        val connection = setUuid(url)
+        connection.setRequestProperty("Content-Type", "application/json")
+        connection.requestMethod = "PUT"
+
+        // Ajoute le body
+        val os = connection.outputStream
+        os.write(Gson().toJson(contact).toByteArray())
+        os.close()
+
+        // Récupère la réponse
+        val json = connection.url.readText(Charsets.UTF_8)
+
+        if(!checkStatus(connection)) {
+            return@withContext null
+        }
+
+        val type = object : TypeToken<ContactDTO>() {}.type
+        Gson().fromJson<ContactDTO>(json, type)
+
+    }
+
+    suspend fun deleteContact(contact: ContactDTO) : Boolean = withContext(Dispatchers.IO) {
+        // Set l'en-tête
+        val url = URL("https://daa.iict.ch/contacts")
+        val connection = setUuid(url)
+        connection.requestMethod = "DELETE"
+
+        checkStatus(connection)
     }
 
 }
