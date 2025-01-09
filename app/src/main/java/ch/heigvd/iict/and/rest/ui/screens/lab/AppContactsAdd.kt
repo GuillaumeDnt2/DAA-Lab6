@@ -1,6 +1,8 @@
 package ch.heigvd.iict.and.rest.ui.screens.lab
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,7 +64,7 @@ fun PhoneTypeSelector(
         phoneTypes.forEach { type ->
             Row(verticalAlignment = Alignment.CenterVertically) {
                 RadioButton(
-                    selected = selectedPhoneType == type,
+                    selected = selectedPhoneType.equals(type, ignoreCase = true),
                     onClick = { onPhoneTypeSelected(type) }
                 )
                 Text(text = type)
@@ -130,7 +132,9 @@ fun AppContactAdd(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
+                .padding(WindowInsets.ime.asPaddingValues())
         ) {
             Text(
                 text = "Add contact",

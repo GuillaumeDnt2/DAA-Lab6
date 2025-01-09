@@ -2,6 +2,8 @@ package ch.heigvd.iict.and.rest.ui.screens.lab
 
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -75,37 +77,42 @@ fun AppContactEdit(
     contactsViewModel: ContactsViewModel = viewModel(factory = ContactsViewModelFactory(application)),
     contactId: Long
 ) {
-    val context = LocalContext.current
     val contact by contactsViewModel.getContactById(contactId).observeAsState()
 
-    if (contact == null) {
-        Toast.makeText(context, "Contact not found", Toast.LENGTH_SHORT).show()
-        return
-    }
-
     // State variables for form fields
-    var name by remember { mutableStateOf(contact?.name ?: "") }
-    var firstname by remember { mutableStateOf(contact?.firstname ?: "") }
-    var email by remember { mutableStateOf(contact?.email ?: "") }
-    var birthday by remember {
-        mutableStateOf(
-            contact?.birthday?.let { date ->
-                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(date)
+    var name by remember { mutableStateOf("") }
+    var firstname by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var birthday by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
+    var zip by remember { mutableStateOf("") }
+    var city by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var selectedPhoneType by remember { mutableStateOf("FAX") }
+
+    // Update the state variables whenever contact is updated
+    LaunchedEffect(contact) {
+        contact?.let {
+            name = it.name ?: ""
+            firstname = it.firstname ?: ""
+            email = it.email ?: ""
+            birthday = it.birthday?.time?.let { date ->
+                SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(date)
             } ?: ""
-        )
+            address = it.address ?: ""
+            zip = it.zip ?: ""
+            city = it.city ?: ""
+            phoneNumber = it.phoneNumber ?: ""
+            selectedPhoneType = it.type?.name ?: "FAX"
+        }
     }
-    var address by remember { mutableStateOf(contact?.address ?: "") }
-    var zip by remember { mutableStateOf(contact?.zip ?: "") }
-    var city by remember { mutableStateOf(contact?.city ?: "") }
-    var phoneNumber by remember { mutableStateOf(contact?.phoneNumber ?: "") }
-    var selectedPhoneType by remember { mutableStateOf(contact?.type?.name ?: "Fax") }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.app_name)) },
                 navigationIcon = {
-                    IconButton(onClick = { /* Handle navigation */ }) {
+                    IconButton(onClick = { contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.INITIAL) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -116,13 +123,23 @@ fun AppContactEdit(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
+                .padding(WindowInsets.ime.asPaddingValues())
         ) {
             Text(
                 text = "Edit contact",
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
+
+            if (contact == null) {
+                // While the contact is loading, display a loading indicator
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+                return@Column
+            }
 
             CustomOutlinedTextField(value = name, onValueChange = { name = it }, label = "Name")
             CustomOutlinedTextField(value = firstname, onValueChange = { firstname = it }, label = "Firstname")
@@ -144,9 +161,13 @@ fun AppContactEdit(
             )
 
             EditActionButtons(
-                onCancelClick = { /* Handle cancel */ },
-                onDeleteClick = { /* Handle delete */ },
-                onSaveClick = { /* Handle save */ }
+                onCancelClick = { contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.INITIAL) },
+                onDeleteClick = {
+                        //TODO : Tell backend that the user has been deleted
+                    },
+                onSaveClick = {
+                        //TODO : Tell backend that the user has been updated
+                }
             )
         }
     }
