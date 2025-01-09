@@ -19,6 +19,9 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
     //TODO: avoir l'UUID afin de pouvoir l'utiliser pour communiquer avec le serveur.
     // Il faut également mettre les fontions enroll et refresh ici qui seront appelées par le ViewModel.
 
+    //FIXME Problème avec la connection car elle marche même si on a pas encore d'uuid (ex j'appelle refresh sur des contacts rajouté à la main
+    // Et je peux faire un delete en remote alors que je ne suis pas encore enroll)
+
     val allContacts = contactsDao.getAllContactsLiveData()
 
     fun getContactById(id: Long) = contactsDao.getContactByIdLiveData(id)
@@ -71,7 +74,10 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
             for(contact in allContacts.value!!){
                 Log.d("Repo", "Defining what to do with contact : ${contact.id} with name : ${contact.name}, remote id : ${contact.remoteId} and status : ${contact.status}")
                 when (contact.status) {
-                    Status.OK -> continue
+                    Status.OK -> {
+                        Log.d("Repo", "Status of contact : ${contact.id} with name : ${contact.name} is OK nothing to Do")
+                        continue
+                    }
                     Status.DEL -> {
                         val res = deleteContact(contact.remoteId.toString())
                         if (res) {
@@ -102,16 +108,18 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
                     }
                 }
             }
-        }else{
-            Log.e("Repo", "No contact present for a refresh")
+            Log.d("Repo", "End refresh")
         }
     }
+
+    //FIXME PRoblème avec l'uuid car si on poste la value alors on se retrouve avec un uuid null tant que le main thread n'as pas mis
+    // à jour la valeur, on ne peut donc pas fetch les 3 contacts créés pour nous juste après.
 
     suspend fun enroll() = withContext(Dispatchers.IO){
         Log.d("Repo", "Enrollement started")
         val url = URL("https://daa.iict.ch/enroll")
         uuid.postValue(url.readText())
-        Log.d("Repo", "Enrollement was successful and gave us the uuid : ${uuid.value}")
+        Log.d("Repo", "Enrollement was successful and gave us a uuid")
     }
 
     private fun okStatus(contact : Contact){
