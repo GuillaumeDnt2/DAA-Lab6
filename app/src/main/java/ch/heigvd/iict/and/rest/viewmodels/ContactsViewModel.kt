@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.heigvd.iict.and.rest.ContactsApplication
 import ch.heigvd.iict.and.rest.models.Contact
 import kotlinx.coroutines.launch
@@ -70,6 +69,7 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
 
     fun refresh() {
         viewModelScope.launch {
+            repository.refresh()
         }
     }
 

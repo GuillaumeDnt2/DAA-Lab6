@@ -20,22 +20,9 @@ data class Contact(
     var status: Status?
 )
 
-fun Contact.toContactDTO(): ContactDTO? {
-    if (this.remoteId == null
-        || this.name == null
-        || this.firstname == null
-        || this.birthday == null
-        || this.email == null
-        || this.address == null
-        || this.zip == null
-        || this.city == null
-        || this.type == null
-        || this.phoneNumber == null
-    ) {
-        return null
-    } else {
+fun Contact.toContactDTO(): ContactDTO {
         return ContactDTO(
-            this.remoteId!!,
+            this.remoteId,
             this.name,
             this.firstname,
             this.birthday.toString(),
@@ -46,6 +33,4 @@ fun Contact.toContactDTO(): ContactDTO? {
             this.type.toString(),
             this.phoneNumber
         )
-
-    }
 }

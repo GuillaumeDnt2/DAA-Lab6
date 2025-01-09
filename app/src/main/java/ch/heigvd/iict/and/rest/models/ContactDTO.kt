@@ -1,12 +1,11 @@
 package ch.heigvd.iict.and.rest.models
 
-import java.util.Calendar
 
 /**
  * Contact de la DB distante
  */
 data class ContactDTO (
-    val id: Long,
+    val id: Long?,
     val name: String,
     val firstname: String?,
     val birthday : String?,
