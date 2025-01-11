@@ -183,7 +183,9 @@ fun AppContactEdit(
                         phoneNumber = phoneNumber,
                         selectedPhoneType = selectedPhoneType,
                         contactsViewModel = contactsViewModel,
-                        update = true)
+                        update = true,
+                        remoteId = contact?.remoteId,
+                        id = contact?.id)
                 }
             )
         }

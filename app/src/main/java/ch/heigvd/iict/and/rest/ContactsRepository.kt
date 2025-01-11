@@ -1,10 +1,6 @@
 package ch.heigvd.iict.and.rest
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
 import ch.heigvd.iict.and.rest.database.ContactsDao
 import ch.heigvd.iict.and.rest.models.*
@@ -31,9 +27,10 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
 
     suspend fun new(contact: Contact) = withContext(Dispatchers.IO){
         Log.d("Repo", "Creating new contact : ${contact.id} with name : ${contact.name}")
-        contactsDao.insert(contact)
+        val localId = contactsDao.insert(contact)
         val res = createContact(contact.toContactDTO())
         if (res != null){
+            contact.id = localId
             contact.remoteId = res.id
             okStatus(contact)
         }else{
@@ -112,9 +109,6 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
             Log.d("Repo", "End refresh")
         }
     }
-
-    //FIXME PRoblème avec l'uuid car si on poste la value alors on se retrouve avec un uuid null tant que le main thread n'as pas mis
-    // à jour la valeur, on ne peut donc pas fetch les 3 contacts créés pour nous juste après.
 
     suspend fun enroll(): Boolean = withContext(Dispatchers.IO){
         Log.d("Repo", "Enrollement started")
@@ -214,6 +208,8 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
     }
 
     private suspend fun createContact(contact: ContactDTO) : ContactDTO? = withContext(Dispatchers.IO){
+        Log.d("Repo", "Creating contact")
+
         // Set l'en-tête
         val url = URL("https://daa.iict.ch/contacts")
         val connection = setUuid(url)
@@ -221,12 +217,13 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         connection.setRequestProperty("Content-Type", "application/json")
         connection.requestMethod = "POST"
 
-        // Ajoute le body
-        val os = connection.outputStream
-        os.write(Gson().toJson(contact).toByteArray())
-        os.close()
+        try{
+            // Ajoute le body
+            val os = connection.outputStream
+            Log.d("Repo", Gson().toJson(contact))
+            os.write(Gson().toJson(contact).toByteArray())
+            os.close()
 
-        try {
             // Récupère la réponse
             val json = connection.inputStream.bufferedReader().use { it.readText() }
 
@@ -252,14 +249,13 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         connection ?: return@withContext null
         connection.setRequestProperty("Content-Type", "application/json")
         connection.requestMethod = "PUT"
-
-        // Ajoute le body
-        val os = connection.outputStream
-        os.write(Gson().toJson(contact).toByteArray())
-        os.close()
+        Log.d("Repo", contact.toString())
 
         try {
-
+            // Ajoute le body
+            val os = connection.outputStream
+            os.write(Gson().toJson(contact).toByteArray())
+            os.close()
 
             // Récupère la réponse
             val json = connection.inputStream.bufferedReader().use { it.readText() }

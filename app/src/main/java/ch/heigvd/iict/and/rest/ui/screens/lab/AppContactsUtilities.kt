@@ -24,7 +24,9 @@ class AppContactsUtilities {
         phoneNumber: String,
         selectedPhoneType: String,
         contactsViewModel: ContactsViewModel,
-        update: Boolean
+        update: Boolean,
+        remoteId: Long? = null,
+        id: Long? = null
     ) {
         val dateFormat = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
         val parsedBirthday: Calendar? = try {
@@ -47,6 +49,7 @@ class AppContactsUtilities {
 
 
         val newContact = Contact(
+            id = id,
             name = name,
             firstname = firstname,
             email = email,
@@ -56,7 +59,7 @@ class AppContactsUtilities {
             city = city,
             type = PhoneType.valueOf(selectedPhoneType.uppercase()),
             phoneNumber = phoneNumber,
-            remoteId = null,
+            remoteId = remoteId,
             status = if (update) {
                 Status.MOD
             } else {

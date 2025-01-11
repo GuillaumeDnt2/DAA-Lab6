@@ -26,6 +26,7 @@ class MainActivity : ComponentActivity() {
     // s'il change à cause de enroll et finalement le sauvegarder dans les préférences à la fin.
 
     private lateinit var prefs: SharedPreferences
+    private var fromShared = false
 
     private val contactVM : ContactsViewModel by viewModels {
         ContactsViewModelFactory(application as ContactsApplication)
@@ -36,8 +37,10 @@ class MainActivity : ComponentActivity() {
         prefs = getPreferences(Context.MODE_PRIVATE)
         val uuid = prefs.getString("uuid", null)
         if (uuid != null) {
-            // Utilisation du setValue pour éviter le déclenchement du observe
-            contactVM.getUuid().value = uuid
+            fromShared = true
+            contactVM.getUuid().postValue(uuid)
+        } else {
+            contactVM.enroll()
         }
 
 
@@ -86,7 +89,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            contactVM.updateLocalDatabase()
+            // Si le changement de l'uuid provient de l'initialisation depuis la sharedPreference
+            if (fromShared) {
+                fromShared = false
+                contactVM.refresh()
+            } else {
+                contactVM.updateLocalDatabase()
+            }
+
         }
 
     }

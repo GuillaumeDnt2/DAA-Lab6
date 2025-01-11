@@ -3,6 +3,7 @@ package ch.heigvd.iict.and.rest.viewmodels
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.util.Log
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -61,6 +62,7 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
 
     fun update(contact : Contact){
         viewModelScope.launch{
+            Log.d("VM", "Updating contact : ${contact.id} with name : ${contact.name}")
             repository.update(contact)
         }
     }

@@ -2,6 +2,7 @@ package ch.heigvd.iict.and.rest.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.text.SimpleDateFormat
 import java.util.*
 
 @Entity
@@ -25,7 +26,7 @@ fun Contact.toContactDTO(): ContactDTO {
             this.remoteId,
             this.name,
             this.firstname,
-            this.birthday.toString(),
+            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(this.birthday?.time),
             this.email,
             this.address,
             this.zip,
