@@ -179,7 +179,7 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         val url = URL("https://daa.iict.ch/contacts/$id")
         val connection = setUuid(url)
         connection ?: return@withContext null
-        val json = connection.url.readText(Charsets.UTF_8)
+        val json = connection.inputStream.bufferedReader().use { it.readText() }
 
         if(!checkStatus(connection)) {
             return@withContext null
@@ -203,7 +203,7 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         os.close()
 
         // Récupère la réponse
-        val json = connection.url.readText(Charsets.UTF_8)
+        val json = connection.inputStream.bufferedReader().use { it.readText() }
 
         // Vérifie que la réponse est OK
         if(!checkStatus(connection)) {
@@ -230,7 +230,7 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         os.close()
 
         // Récupère la réponse
-        val json = connection.url.readText(Charsets.UTF_8)
+        val json = connection.inputStream.bufferedReader().use { it.readText() }
 
         if(!checkStatus(connection)) {
             return@withContext null
