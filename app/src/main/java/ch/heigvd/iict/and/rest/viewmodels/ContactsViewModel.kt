@@ -1,5 +1,9 @@
 package ch.heigvd.iict.and.rest.viewmodels
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -66,6 +70,8 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
             repository.enroll()
         }
     }
+
+
 
     fun updateLocalDatabase() {
         viewModelScope.launch {

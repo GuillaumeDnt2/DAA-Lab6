@@ -1,6 +1,10 @@
 package ch.heigvd.iict.and.rest
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.util.Log
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.MutableLiveData
 import ch.heigvd.iict.and.rest.database.ContactsDao
 import ch.heigvd.iict.and.rest.models.*
@@ -112,24 +116,32 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
     //FIXME PRoblème avec l'uuid car si on poste la value alors on se retrouve avec un uuid null tant que le main thread n'as pas mis
     // à jour la valeur, on ne peut donc pas fetch les 3 contacts créés pour nous juste après.
 
-    suspend fun enroll() = withContext(Dispatchers.IO){
+    suspend fun enroll(): Boolean = withContext(Dispatchers.IO){
+        Log.d("Repo", "Enrollement started")
 
-        //Récupère le nouveau uuid
-        Log.d("Repo", "Enrollement started, uuid: ${uuid.value}")
-        val url = URL("https://daa.iict.ch/enroll")
-        val newUuid = url.readText()
-        Log.d("Repo", "Enrollement was successful and gave us the uuid : $newUuid")
-        uuid.postValue(newUuid)
+        try {
+            //Récupère le nouveau uuid
+            val url = URL("https://daa.iict.ch/enroll")
+            val newUuid = url.readText()
+            Log.d("Repo", "Enrollement was successful and gave us the uuid : $newUuid")
+            uuid.postValue(newUuid)
+            true
+        } catch (e: Exception) {
+            Log.e("Repo", "Enrollement failed")
+            false
+        }
+
     }
 
     suspend fun updateLocalDatabase() = withContext(Dispatchers.IO) {
         Log.d("Repo", "Updating local database")
-        // Supprime la base de données local
-        contactsDao.clearAllContacts()
-
         // Récupère les contacts depuis le serveur
         val contacts = fetchAll()
+
         if (contacts != null) {
+            // Supprime la base de données local
+            contactsDao.clearAllContacts()
+
             // Met à jour la base de données local
             for (contact in contacts) {
                 Log.d("Repo", "Adding contact : ${contact.id} with name : ${contact.name}")
@@ -164,29 +176,41 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         val connection = setUuid(url)
         connection ?: return@withContext null
 
-        val json = connection.inputStream.bufferedReader().use { it.readText() }
+        try {
+            val json = connection.inputStream.bufferedReader().use { it.readText() }
 
-        if(!checkStatus(connection)) {
-            Log.d("Repo", "Fetching all fail with status : ${connection.responseCode}")
-            return@withContext null
+            if (!checkStatus(connection)) {
+                Log.d("Repo", "Fetching all fail with status : ${connection.responseCode}")
+                return@withContext null
+            }
+
+            val type = object : TypeToken<List<ContactDTO>>() {}.type
+            Gson().fromJson<List<ContactDTO>>(json, type)
+
+        } catch (e: Exception) {
+            Log.e("Repo", "Fetching all fail")
+            null
         }
-
-        val type = object : TypeToken<List<ContactDTO>>() {}.type
-        Gson().fromJson<List<ContactDTO>>(json, type)
     }
 
     suspend fun fetchContact(id: String) : ContactDTO? = withContext(Dispatchers.IO){
         val url = URL("https://daa.iict.ch/contacts/$id")
         val connection = setUuid(url)
         connection ?: return@withContext null
-        val json = connection.inputStream.bufferedReader().use { it.readText() }
 
-        if(!checkStatus(connection)) {
-            return@withContext null
+        try {
+            val json = connection.inputStream.bufferedReader().use { it.readText() }
+
+            if (!checkStatus(connection)) {
+                return@withContext null
+            }
+
+            val type = object : TypeToken<ContactDTO>() {}.type
+            Gson().fromJson<ContactDTO>(json, type)
+        } catch (e: Exception) {
+            Log.e("Repo", "Fetching contact fail")
+            null
         }
-
-        val type = object : TypeToken<ContactDTO>() {}.type
-        Gson().fromJson<ContactDTO>(json, type)
     }
 
     private suspend fun createContact(contact: ContactDTO) : ContactDTO? = withContext(Dispatchers.IO){
@@ -202,17 +226,22 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         os.write(Gson().toJson(contact).toByteArray())
         os.close()
 
-        // Récupère la réponse
-        val json = connection.inputStream.bufferedReader().use { it.readText() }
+        try {
+            // Récupère la réponse
+            val json = connection.inputStream.bufferedReader().use { it.readText() }
 
-        // Vérifie que la réponse est OK
-        if(!checkStatus(connection)) {
-            return@withContext null
+            // Vérifie que la réponse est OK
+            if (!checkStatus(connection)) {
+                return@withContext null
+            }
+
+            // Converti le JSON en objet et le retourne
+            val type = object : TypeToken<ContactDTO>() {}.type
+            Gson().fromJson<ContactDTO>(json, type)
+        } catch (e: Exception) {
+            Log.e("Repo", "Creating contact fail")
+            null
         }
-
-        // Converti le JSON en objet et le retourne
-        val type = object : TypeToken<ContactDTO>() {}.type
-        Gson().fromJson<ContactDTO>(json, type)
 
     }
 
@@ -229,15 +258,22 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         os.write(Gson().toJson(contact).toByteArray())
         os.close()
 
-        // Récupère la réponse
-        val json = connection.inputStream.bufferedReader().use { it.readText() }
+        try {
 
-        if(!checkStatus(connection)) {
-            return@withContext null
+
+            // Récupère la réponse
+            val json = connection.inputStream.bufferedReader().use { it.readText() }
+
+            if (!checkStatus(connection)) {
+                return@withContext null
+            }
+
+            val type = object : TypeToken<ContactDTO>() {}.type
+            Gson().fromJson<ContactDTO>(json, type)
+        } catch (e: Exception) {
+            Log.e("Repo", "Updating contact fail")
+            null
         }
-
-        val type = object : TypeToken<ContactDTO>() {}.type
-        Gson().fromJson<ContactDTO>(json, type)
 
     }
 
@@ -248,7 +284,13 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         connection ?: return@withContext false
         connection.requestMethod = "DELETE"
 
-        checkStatus(connection)
+        try {
+            checkStatus(connection)
+        } catch (e: Exception){
+            Log.e("Repo", "Deleting contact fail")
+            false
+        }
+
     }
 
 }

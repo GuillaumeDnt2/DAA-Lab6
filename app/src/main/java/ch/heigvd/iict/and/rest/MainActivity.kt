@@ -2,12 +2,15 @@ package ch.heigvd.iict.and.rest
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import ch.heigvd.iict.and.rest.ui.screens.AppContact
 import ch.heigvd.iict.and.rest.ui.screens.lab.AppContactAdd
@@ -33,7 +36,8 @@ class MainActivity : ComponentActivity() {
         prefs = getPreferences(Context.MODE_PRIVATE)
         val uuid = prefs.getString("uuid", null)
         if (uuid != null) {
-           //contactVM.getUuid().postValue(uuid)
+            // Utilisation du setValue pour éviter le déclenchement du observe
+            contactVM.getUuid().value = uuid
         }
 
 
