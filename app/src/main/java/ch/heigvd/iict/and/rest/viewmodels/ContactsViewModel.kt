@@ -27,13 +27,13 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
 
     val allContacts = repository.allContacts
 
-    var uuid = repository.uuid
-
     private val _idToEdit = MutableLiveData<Long?>(null)
     val idToEdit: LiveData<Long?> = _idToEdit
 
     private val _applicationStatus = MutableLiveData<ApplicationStatus>(ApplicationStatus.INITIAL)
     val applicationStatus: LiveData<ApplicationStatus> = _applicationStatus
+
+    fun getUuid() = repository.uuid
 
     fun setIdToEdit(id: Long?) {
         _idToEdit.value = id
@@ -64,6 +64,12 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
     fun enroll() {
         viewModelScope.launch{
             repository.enroll()
+        }
+    }
+
+    fun updateLocalDatabase() {
+        viewModelScope.launch {
+            repository.updateLocalDatabase()
         }
     }
 

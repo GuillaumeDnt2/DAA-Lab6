@@ -3,6 +3,7 @@ package ch.heigvd.iict.and.rest
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -32,7 +33,7 @@ class MainActivity : ComponentActivity() {
         prefs = getPreferences(Context.MODE_PRIVATE)
         val uuid = prefs.getString("uuid", null)
         if (uuid != null) {
-            contactVM.uuid.postValue(uuid)
+           //contactVM.getUuid().postValue(uuid)
         }
 
 
@@ -73,17 +74,16 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    }
-
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        return super.onCreateOptionsMenu(menu)
-        contactVM.uuid.observe(this) { value ->
+        contactVM.getUuid().observe(this) { value ->
+            Log.d("Repo", "UUID changed to $value")
             if (value != null) {
                 prefs.edit {
                     putString("uuid", value)
                 }
             }
+
+            contactVM.updateLocalDatabase()
         }
+
     }
 }

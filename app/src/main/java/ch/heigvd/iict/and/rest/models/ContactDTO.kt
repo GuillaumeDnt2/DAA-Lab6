@@ -1,5 +1,8 @@
 package ch.heigvd.iict.and.rest.models
 
+import java.text.SimpleDateFormat
+import java.util.Calendar
+
 
 /**
  * Contact de la DB distante
@@ -16,3 +19,24 @@ data class ContactDTO (
     val type: String?,
     val phoneNumber: String?,
 )
+
+fun ContactDTO.toContact(): Contact {
+    val birthday = Calendar.getInstance();
+    birthday.setTime(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").parse(this.birthday))
+    return Contact(
+        null,
+        this.name,
+        this.firstname,
+        birthday,
+        this.email,
+        this.address,
+        this.zip,
+        this.city,
+        this.type?.let { PhoneType.valueOf(it) },
+        this.phoneNumber,
+        this.id,
+        Status.OK
+    )
+}
+
+

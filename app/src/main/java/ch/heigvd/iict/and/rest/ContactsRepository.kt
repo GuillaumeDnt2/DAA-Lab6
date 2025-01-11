@@ -3,10 +3,7 @@ package ch.heigvd.iict.and.rest
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import ch.heigvd.iict.and.rest.database.ContactsDao
-import ch.heigvd.iict.and.rest.models.Contact
-import ch.heigvd.iict.and.rest.models.ContactDTO
-import ch.heigvd.iict.and.rest.models.Status
-import ch.heigvd.iict.and.rest.models.toContactDTO
+import ch.heigvd.iict.and.rest.models.*
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -116,10 +113,29 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
     // à jour la valeur, on ne peut donc pas fetch les 3 contacts créés pour nous juste après.
 
     suspend fun enroll() = withContext(Dispatchers.IO){
-        Log.d("Repo", "Enrollement started")
+
+        //Récupère le nouveau uuid
+        Log.d("Repo", "Enrollement started, uuid: ${uuid.value}")
         val url = URL("https://daa.iict.ch/enroll")
-        uuid.postValue(url.readText())
-        Log.d("Repo", "Enrollement was successful and gave us a uuid")
+        val newUuid = url.readText()
+        Log.d("Repo", "Enrollement was successful and gave us the uuid : $newUuid")
+        uuid.postValue(newUuid)
+    }
+
+    suspend fun updateLocalDatabase() = withContext(Dispatchers.IO) {
+        Log.d("Repo", "Updating local database")
+        // Supprime la base de données local
+        contactsDao.clearAllContacts()
+
+        // Récupère les contacts depuis le serveur
+        val contacts = fetchAll()
+        if (contacts != null) {
+            // Met à jour la base de données local
+            for (contact in contacts) {
+                Log.d("Repo", "Adding contact : ${contact.id} with name : ${contact.name}")
+                contactsDao.insert(contact.toContact());
+            }
+        }
     }
 
     private fun okStatus(contact : Contact){
@@ -128,23 +144,30 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         contactsDao.update(contact)
     }
 
-    private fun setUuid(url: URL) : HttpURLConnection{
+    private fun setUuid(url: URL) : HttpURLConnection?{
+        // Vérifie que l'uuid ne soit pas null
+        uuid.value ?: return null
+
         val connection = url.openConnection() as HttpURLConnection
         connection.setRequestProperty("X-UUID", uuid.value)
         return connection
     }
 
     private fun checkStatus(connection: HttpURLConnection) : Boolean {
-        return connection.responseCode >= 200 || connection.responseCode < 300
+        return connection.responseCode in 200..299
     }
 
 
     suspend fun fetchAll() : List<ContactDTO>? = withContext(Dispatchers.IO){
+        Log.d("Repo", "Fetching all contacts")
         val url = URL("https://daa.iict.ch/contacts")
         val connection = setUuid(url)
-        val json = connection.url.readText(Charsets.UTF_8)
+        connection ?: return@withContext null
 
-        if(checkStatus(connection)) {
+        val json = connection.inputStream.bufferedReader().use { it.readText() }
+
+        if(!checkStatus(connection)) {
+            Log.d("Repo", "Fetching all fail with status : ${connection.responseCode}")
             return@withContext null
         }
 
@@ -155,9 +178,10 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
     suspend fun fetchContact(id: String) : ContactDTO? = withContext(Dispatchers.IO){
         val url = URL("https://daa.iict.ch/contacts/$id")
         val connection = setUuid(url)
+        connection ?: return@withContext null
         val json = connection.url.readText(Charsets.UTF_8)
 
-        if(checkStatus(connection)) {
+        if(!checkStatus(connection)) {
             return@withContext null
         }
 
@@ -169,6 +193,7 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         // Set l'en-tête
         val url = URL("https://daa.iict.ch/contacts")
         val connection = setUuid(url)
+        connection ?: return@withContext null
         connection.setRequestProperty("Content-Type", "application/json")
         connection.requestMethod = "POST"
 
@@ -195,6 +220,7 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         // Set l'en-tête
         val url = URL("https://daa.iict.ch/contacts/${contact.id}")
         val connection = setUuid(url)
+        connection ?: return@withContext null
         connection.setRequestProperty("Content-Type", "application/json")
         connection.requestMethod = "PUT"
 
@@ -219,6 +245,7 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
         // Set l'en-tête
         val url = URL("https://daa.iict.ch/contacts/$id")
         val connection = setUuid(url)
+        connection ?: return@withContext false
         connection.requestMethod = "DELETE"
 
         checkStatus(connection)
