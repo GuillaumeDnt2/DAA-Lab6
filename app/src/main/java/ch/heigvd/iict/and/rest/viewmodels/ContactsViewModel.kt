@@ -23,11 +23,6 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
         INITIAL
     }
 
-    //TODO: Il faut également un UUID ici qui sera soit donné par l'Activité depuis les préférences
-    // soit donné par l'inscription depuis le repository.
-    // En gros strucutre: Préférences <-> Activité <-> ViewModel <-> Repository <-> Serveur
-    // L'UUID va se balader entre tous ces participants.
-
     private val repository = application.repository
 
     val allContacts = repository.allContacts

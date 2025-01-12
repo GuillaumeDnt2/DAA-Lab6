@@ -170,7 +170,6 @@ fun AppContactEdit(
                         contactsViewModel.setApplicationStatus(ContactsViewModel.ApplicationStatus.INITIAL)
                     },
                 onSaveClick = {
-                        //TODO : Tell backend that the user has been updated
                     AppContactsUtilities().handleSaveOrUpdateClick(
                         context = context,
                         name = name,

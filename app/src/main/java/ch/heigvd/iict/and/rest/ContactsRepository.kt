@@ -2,6 +2,7 @@ package ch.heigvd.iict.and.rest
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import ch.heigvd.iict.and.rest.database.ContactsDao
 import ch.heigvd.iict.and.rest.models.*
 import com.google.gson.Gson
@@ -12,12 +13,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 class ContactsRepository(private val contactsDao: ContactsDao) {
-
-    //TODO: avoir l'UUID afin de pouvoir l'utiliser pour communiquer avec le serveur.
-    // Il faut également mettre les fontions enroll et refresh ici qui seront appelées par le ViewModel.
-
-    //FIXME Problème avec la connection car elle marche même si on a pas encore d'uuid (ex j'appelle refresh sur des contacts rajouté à la main
-    // Et je peux faire un delete en remote alors que je ne suis pas encore enroll)
 
     val allContacts = contactsDao.getAllContactsLiveData()
 
