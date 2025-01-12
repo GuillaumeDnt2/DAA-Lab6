@@ -5,15 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.sqlite.db.SupportSQLiteDatabase
 import ch.heigvd.iict.and.rest.database.converters.CalendarConverter
 import ch.heigvd.iict.and.rest.models.Contact
-import ch.heigvd.iict.and.rest.models.PhoneType
-import ch.heigvd.iict.and.rest.models.Status
-import java.util.Calendar
-import java.util.GregorianCalendar
-import kotlin.concurrent.thread
 
+/**
+ * Contact database
+ *
+ * Authors : Dunant Guillaume, Junod Arthur, Häffner Edwin
+ */
 @Database(entities = [Contact::class], version = 1, exportSchema = true)
 @TypeConverters(CalendarConverter::class)
 abstract class ContactsDatabase : RoomDatabase() {

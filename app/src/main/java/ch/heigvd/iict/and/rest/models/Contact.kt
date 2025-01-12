@@ -5,6 +5,11 @@ import androidx.room.PrimaryKey
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Entity class for a contact
+ *
+ * Authors : Dunant Guillaume, Junod Arthur, Häffner Edwin
+ */
 @Entity
 data class Contact(
     @PrimaryKey(autoGenerate = true) var id: Long? = null,

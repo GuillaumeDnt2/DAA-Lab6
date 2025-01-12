@@ -2,7 +2,6 @@ package ch.heigvd.iict.and.rest
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import ch.heigvd.iict.and.rest.database.ContactsDao
 import ch.heigvd.iict.and.rest.models.*
 import com.google.gson.Gson
@@ -12,6 +11,11 @@ import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
 import java.net.URL
 
+/**
+ * Repository for contacts
+ *
+ * Authors : Dunant Guillaume, Junod Arthur, Häffner Edwin
+ */
 class ContactsRepository(private val contactsDao: ContactsDao) {
 
     val allContacts = contactsDao.getAllContactsLiveData()

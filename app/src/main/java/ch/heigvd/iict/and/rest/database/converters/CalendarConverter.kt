@@ -3,6 +3,11 @@ package ch.heigvd.iict.and.rest.database.converters
 import androidx.room.TypeConverter
 import java.util.*
 
+/**
+ * Converter class for Calendar in Room
+ *
+ * Authors : Dunant Guillaume, Junod Arthur, Häffner Edwin
+ */
 class CalendarConverter {
 
     @TypeConverter

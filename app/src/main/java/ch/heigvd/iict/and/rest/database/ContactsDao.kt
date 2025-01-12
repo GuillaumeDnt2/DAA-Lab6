@@ -8,6 +8,11 @@ import androidx.room.Query
 import androidx.room.Update
 import ch.heigvd.iict.and.rest.models.Contact
 
+/**
+ * ContactsDao
+ *
+ * Authors : Dunant Guillaume, Junod Arthur, Häffner Edwin
+ */
 @Dao
 interface ContactsDao {
 

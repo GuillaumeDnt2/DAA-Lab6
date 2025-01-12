@@ -6,6 +6,8 @@ import java.util.Calendar
 
 /**
  * Contact de la DB distante
+ *
+ * Authors : Dunant Guillaume, Junod Arthur, Häffner Edwin
  */
 data class ContactDTO (
     val id: Long?,

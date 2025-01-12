@@ -1,10 +1,6 @@
 package ch.heigvd.iict.and.rest.viewmodels
 
-import android.content.Context
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,6 +11,11 @@ import ch.heigvd.iict.and.rest.ContactsApplication
 import ch.heigvd.iict.and.rest.models.Contact
 import kotlinx.coroutines.launch
 
+/**
+ * ViewModel for the Contacts.
+ *
+ * Authors : Dunant Guillaume, Junod Arthur, Häffner Edwin
+ */
 class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(application) {
 
     enum class ApplicationStatus {
@@ -67,8 +68,6 @@ class ContactsViewModel(application: ContactsApplication) : AndroidViewModel(app
             repository.enroll()
         }
     }
-
-
 
     fun updateLocalDatabase() {
         viewModelScope.launch {

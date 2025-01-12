@@ -2,15 +2,11 @@ package ch.heigvd.iict.and.rest
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.util.Log
-import android.view.Menu
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import ch.heigvd.iict.and.rest.ui.screens.AppContact
 import ch.heigvd.iict.and.rest.ui.screens.lab.AppContactAdd
@@ -19,6 +15,11 @@ import ch.heigvd.iict.and.rest.ui.theme.MyComposeApplicationTheme
 import ch.heigvd.iict.and.rest.viewmodels.ContactsViewModel
 import ch.heigvd.iict.and.rest.viewmodels.ContactsViewModelFactory
 
+/**
+ * This is the main activity of the application.
+ *
+ * Authors : Dunant Guillaume, Junod Arthur, Häffner Edwin
+ */
 class MainActivity : ComponentActivity() {
 
     private lateinit var prefs: SharedPreferences
