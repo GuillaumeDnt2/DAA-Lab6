@@ -101,6 +101,9 @@ class ContactsRepository(private val contactsDao: ContactsDao) {
                     }
                 }
             }
+
+            updateLocalDatabase()
+
             Log.d("Repo", "End refresh")
         }
     }

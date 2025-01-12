@@ -10,6 +10,11 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+/**
+ * Utility class for handling contacts-related operations.
+ *
+ * Authors : Dunant Guillaume, Junod Arthur, Häffner Edwin
+ */
 class AppContactsUtilities {
 
     fun handleSaveOrUpdateClick(
@@ -45,8 +50,6 @@ class AppContactsUtilities {
             ).show()
             return
         }
-
-
 
         val newContact = Contact(
             id = id,

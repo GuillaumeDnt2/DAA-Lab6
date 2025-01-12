@@ -20,11 +20,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.heigvd.iict.and.rest.ContactsApplication
-import ch.heigvd.iict.and.rest.models.Contact
 import ch.heigvd.iict.and.rest.viewmodels.ContactsViewModel
 import ch.heigvd.iict.and.rest.viewmodels.ContactsViewModelFactory
-// Add required imports
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -33,8 +30,17 @@ import androidx.compose.ui.unit.dp
 import ch.heigvd.iict.and.rest.R
 import java.util.Locale
 import java.text.SimpleDateFormat
+/**
+ * Edit contact composable layout
+ *
+ * Authors : Dunant Guillaume, Junod Arthur, Häffner Edwin
+ */
 
-// Add this new component for the edit/delete/cancel buttons
+/**
+ * EditActionButtons
+ *
+ * A composable that displays the action buttons for editing a contact. (Cancel, Delete, Save)
+ */
 @Composable
 fun EditActionButtons(
     onCancelClick: () -> Unit,
@@ -70,6 +76,11 @@ fun EditActionButtons(
     }
 }
 
+/**
+ * AppContactEdit
+ *
+ * A composable that displays the screen for editing or deleting a contact.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppContactEdit(
@@ -79,7 +90,7 @@ fun AppContactEdit(
 ) {
     val contact by contactsViewModel.getContactById(contactId).observeAsState()
 
-    var context = LocalContext.current
+    val context = LocalContext.current
 
     // State variables for form fields
     var name by remember { mutableStateOf("") }
@@ -191,18 +202,24 @@ fun AppContactEdit(
     }
 }
 
+// Preview data for the AppContactEditPreview composable
 private object PreviewData {
-    const val name = "Pelletier"
-    const val firstname = "Bernard"
-    const val email = "b.pelletier@gmel.com"
-    const val birthday = "26.12.2003"
-    const val address = "Avenue des Sports 20"
-    const val zip = "1400"
-    const val city = "Yverdon-les-Bains"
-    const val phoneNumber = "+41 24 123 10 01"
-    const val phoneType = "Fax"
+    const val NAME = "Pelletier"
+    const val FIRSTNAME = "Bernard"
+    const val EMAIL = "b.pelletier@gmel.com"
+    const val BIRTHDAY = "26.12.2003"
+    const val ADDRESS = "Avenue des Sports 20"
+    const val ZIP = "1400"
+    const val CITY = "Yverdon-les-Bains"
+    const val PHONENUMBER = "+41 24 123 10 01"
+    const val PHONETYPE = "Fax"
 }
 
+/**
+ * AppContactEditPreview
+ *
+ * A preview of the AppContactEdit composable.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
@@ -214,7 +231,7 @@ fun AppContactEditPreview() {
                     title = { Text("REST Lab") },
                     navigationIcon = {
                         IconButton(onClick = { }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     }
                 )
@@ -232,21 +249,21 @@ fun AppContactEditPreview() {
                     modifier = Modifier.padding(vertical = 16.dp)
                 )
 
-                CustomOutlinedTextField(value = PreviewData.name, onValueChange = { }, label = "Name")
-                CustomOutlinedTextField(value = PreviewData.firstname, onValueChange = { }, label = "Firstname")
-                CustomOutlinedTextField(value = PreviewData.email, onValueChange = { }, label = "E-Mail")
-                CustomOutlinedTextField(value = PreviewData.birthday, onValueChange = { }, label = "Birthday")
-                CustomOutlinedTextField(value = PreviewData.address, onValueChange = { }, label = "Address")
-                CustomOutlinedTextField(value = PreviewData.zip, onValueChange = { }, label = "Zip")
-                CustomOutlinedTextField(value = PreviewData.city, onValueChange = { }, label = "City")
+                CustomOutlinedTextField(value = PreviewData.NAME, onValueChange = { }, label = "Name")
+                CustomOutlinedTextField(value = PreviewData.FIRSTNAME, onValueChange = { }, label = "Firstname")
+                CustomOutlinedTextField(value = PreviewData.EMAIL, onValueChange = { }, label = "E-Mail")
+                CustomOutlinedTextField(value = PreviewData.BIRTHDAY, onValueChange = { }, label = "Birthday")
+                CustomOutlinedTextField(value = PreviewData.ADDRESS, onValueChange = { }, label = "Address")
+                CustomOutlinedTextField(value = PreviewData.ZIP, onValueChange = { }, label = "Zip")
+                CustomOutlinedTextField(value = PreviewData.CITY, onValueChange = { }, label = "City")
 
                 PhoneTypeSelector(
-                    selectedPhoneType = PreviewData.phoneType,
+                    selectedPhoneType = PreviewData.PHONETYPE,
                     onPhoneTypeSelected = { }
                 )
 
                 CustomOutlinedTextField(
-                    value = PreviewData.phoneNumber,
+                    value = PreviewData.PHONENUMBER,
                     onValueChange = { },
                     label = "Phone number"
                 )

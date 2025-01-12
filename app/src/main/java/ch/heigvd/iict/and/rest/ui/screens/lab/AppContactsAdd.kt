@@ -1,6 +1,5 @@
 package ch.heigvd.iict.and.rest.ui.screens.lab
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -14,31 +13,30 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.heigvd.iict.and.rest.ContactsApplication
-import ch.heigvd.iict.and.rest.models.Contact
 import ch.heigvd.iict.and.rest.viewmodels.ContactsViewModel
 import ch.heigvd.iict.and.rest.viewmodels.ContactsViewModelFactory
-// Add required imports
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ch.heigvd.iict.and.rest.R
-import ch.heigvd.iict.and.rest.models.PhoneType
-import ch.heigvd.iict.and.rest.models.Status
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
+/**
+ * Add contact composable layout
+ *
+ * Authors : Dunant Guillaume, Junod Arthur, Häffner Edwin
+ */
 
+/**
+ * CustomOutlinedTextField
+ * A composable function that creates an outlined text field with a label.
+ */
 @Composable
 fun CustomOutlinedTextField(
     value: String,
@@ -54,6 +52,10 @@ fun CustomOutlinedTextField(
     )
 }
 
+/**
+ * PhoneTypeSelector
+ * A composable function that creates a row of radio buttons to select the type of phone number.
+ */
 @Composable
 fun PhoneTypeSelector(
     selectedPhoneType: String,
@@ -78,6 +80,10 @@ fun PhoneTypeSelector(
     }
 }
 
+/**
+ * ActionButtons
+ * A composable function that creates two buttons to cancel or save the contact.
+ */
 @Composable
 fun ActionButtons(
     onCancelClick: () -> Unit,
@@ -105,13 +111,17 @@ fun ActionButtons(
     }
 }
 
+/**
+ * AppContactAdd
+ * A composable function that creates a screen to add a new contact.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppContactAdd(
     application: ContactsApplication,
     contactsViewModel: ContactsViewModel = viewModel(factory = ContactsViewModelFactory(application))
 ) {
-    var context = LocalContext.current
+    val context = LocalContext.current
 
     var name by remember { mutableStateOf("") }
     var firstname by remember { mutableStateOf("") }
@@ -189,6 +199,10 @@ fun AppContactAdd(
     }
 }
 
+/**
+ * AppContactAddPreview
+ * The preview of the AppContactAdd composable function.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
@@ -200,7 +214,7 @@ fun AppContactAddPreview() {
                     title = { Text("REST Lab") },
                     navigationIcon = {
                         IconButton(onClick = { }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
                     }
                 )
